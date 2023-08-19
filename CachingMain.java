@@ -3,31 +3,29 @@ import java.util.HashMap;
 import java.util.Map;
 public class CachingMain {
 
-    private static final Map<String, SoftReference<String>> cache = new HashMap<>();
+    private static final Map<String, SoftReference<byte[]>> imageCache = new HashMap<>();
 
-    public static String getDataFromCache(String key) {
-        SoftReference<String> cachedValue = cache.get(key);
-
-        if (cachedValue != null && cachedValue.get() != null) {
-            System.out.println("Cache hit for key: " + key);
-            return cachedValue.get();
+    public static byte[] getImage(String imageName) {
+        SoftReference<byte[]> cachedImage = imageCache.get(imageName);
+        if (cachedImage != null && cachedImage.get() != null) {
+            System.out.println("Cache hit for image: " + imageName);
+            return cachedImage.get();
         } else {
-            System.out.println("Cache miss for key: " + key);
-            String newValue = fetchDataFromDatabase(key); // Simulated database fetch
-            cache.put(key, new SoftReference<>(newValue));
-            return newValue;
+            System.out.println("Cache miss for image: " + imageName);
+            byte[] newImage = fetchImageFromDatabase(imageName); // Simulated image fetch
+            imageCache.put(imageName, new SoftReference<>(newImage));
+            return newImage;
         }
     }
-    private static String fetchDataFromDatabase(String key) {
-        // Simulated database fetch
-        System.out.println("Fetching data from database for key: " + key);
-        return "Data for " + key;
+    private static byte[] fetchImageFromDatabase(String imageName) {
+        // Simulated image fetch from database or storage
+        System.out.println("Fetching image from database: " + imageName);
+        return new byte[1024 * 1024]; // Simulated image data (1 MB)
     }
     public static void main(String[] args) {
-        System.out.println(getDataFromCache("Key1")); // Cache miss
-        System.out.println(getDataFromCache("Key1")); // Cache hit
-        System.out.println(getDataFromCache("Key2")); // Cache miss
-        System.out.println(getDataFromCache("Key2")); // Cache hit
+        byte[] image1 = getImage("image1.jpg"); // Cache miss
+        byte[] image2 = getImage("image2.jpg"); // Cache miss
+        byte[] image1Again = getImage("image1.jpg"); // Cache hit
     }
 
 }
